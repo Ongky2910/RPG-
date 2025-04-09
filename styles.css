@@ -43,3 +43,50 @@ body {
     background-image: linear-gradient(#fecc4c, #ffac33);
     border: 3px solid #feac32;
   }
+
+  @keyframes levelUpEffect {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); opacity: 1; }
+    100% { transform: scale(1); }
+}
+
+#levelUpMessage {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: linear-gradient(45deg, #FFD700, #FF8C00);
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+    padding: 20px 50px;
+    border-radius: 15px;
+    text-align: center;
+    box-shadow: 0 0 20px rgba(255, 165, 0, 0.9);
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    z-index: 1000;
+}
+
+#levelUpMessage.show {
+    opacity: 1;
+    animation: levelUpEffect 1s ease-out;
+    text-shadow: 0px 0px 10px rgba(255, 255, 255, 1);
+}
+
+
+#levelUpMessage.hidden {
+    opacity: 0;
+    animation: levelUpEffect 1s ease-out;
+    text-shadow: 0px 0px 10px rgba(255, 255, 255, 1);
+}
+
+  .show {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  
+  .hidden {
+    display: none;
+  }
+  

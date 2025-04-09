@@ -8,10 +8,24 @@
   <body>
     <div id="game">
       <div id="stats">
-        <span class="stat">XP: <strong><span id="xpText">0</span></strong></span>
-        <span class="stat">Health: <strong><span id="healthText">100</span></strong></span>
+        <span class="stat">Level: <strong><span id="playerLevel">1</span></strong></span>
+        <span class="stat">XP: <strong><span id="playerXP">0</span></strong></span>
+        <span class="stat">Health: <strong><span id="playerHealthStats">100</span></strong></span>
         <span class="stat">Gold: <strong><span id="goldText">50</span></strong></span>
       </div>
+
+      <div id="playerStats">
+        <h3>Player Stats</h3>
+        <p>HP: <span id="playerHP">100 / 100</span></p>
+        <p>XP: <strong><span id="playerXP">0</span></strong></p>
+        <p>Attack: <strong><span id="playerAttack">5</span></strong></p>
+        <p>Defense: <strong><span id="playerDefense">3</span></strong></p>
+        <p>Agility: <strong><span id="playerAgility">4</span></strong></p>
+      </div>
+      
+      <div id="levelUpMessage" class="hidden">Level Up!</div>
+      <audio id="levelUpSound" src="assets/sounds/682633__bastianhallo__level-up.ogg"></audio>
+
       <div id="controls">
         <button id="button1">Go to store</button>
         <button id="button2">Go to cave</button>

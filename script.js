@@ -6,7 +6,19 @@ let fighting;
 let monsterHealth;
 let inventory = ["stick"];
 
-const button1 = document.querySelector('#button1');
+let player = {
+  level: 1,
+  xp: 0,
+  health: 100,
+  maxHP: 100,
+  gold: 50,
+  attack: 5,
+  defense: 2,
+  agility: 1,
+  inventory: ["stick"],
+};
+
+const button1 = document.querySelector("#button1");
 const button2 = document.querySelector("#button2");
 const button3 = document.querySelector("#button3");
 const text = document.querySelector("#text");
@@ -17,83 +29,146 @@ const monsterStats = document.querySelector("#monsterStats");
 const monsterName = document.querySelector("#monsterName");
 const monsterHealthText = document.querySelector("#monsterHealth");
 const weapons = [
-  { name: 'stick', power: 5 },
-  { name: 'dagger', power: 30 },
-  { name: 'claw hammer', power: 50 },
-  { name: 'sword', power: 100 }
+  { name: "stick", power: 5 },
+  { name: "dagger", power: 30 },
+  { name: "claw hammer", power: 50 },
+  { name: "sword", power: 100 },
 ];
 const monsters = [
   {
     name: "slime",
     level: 2,
-    health: 15
+    health: 15,
   },
   {
     name: "fanged beast",
     level: 8,
-    health: 60
+    health: 60,
   },
   {
     name: "dragon",
     level: 20,
-    health: 300
-  }
-]
+    health: 300,
+  },
+];
 const locations = [
   {
     name: "town square",
     "button text": ["Go to store", "Go to cave", "Fight dragon"],
     "button functions": [goStore, goCave, fightDragon],
-    text: "You are in the town square. You see a sign that says \"Store\"."
+    text: 'You are in the town square. You see a sign that says "Store".',
   },
   {
     name: "store",
-    "button text": ["Buy 10 health (10 gold)", "Buy weapon (30 gold)", "Go to town square"],
+    "button text": [
+      "Buy 10 health (10 gold)",
+      "Buy weapon (30 gold)",
+      "Go to town square",
+    ],
     "button functions": [buyHealth, buyWeapon, goTown],
-    text: "You enter the store."
+    text: "You enter the store.",
   },
   {
     name: "cave",
     "button text": ["Fight slime", "Fight fanged beast", "Go to town square"],
     "button functions": [fightSlime, fightBeast, goTown],
-    text: "You enter the cave. You see some monsters."
+    text: "You enter the cave. You see some monsters.",
   },
   {
     name: "fight",
     "button text": ["Attack", "Dodge", "Run"],
     "button functions": [attack, dodge, goTown],
-    text: "You are fighting a monster."
+    text: "You are fighting a monster.",
   },
   {
     name: "kill monster",
-    "button text": ["Go to town square", "Go to town square", "Go to town square"],
+    "button text": [
+      "Go to town square",
+      "Go to town square",
+      "Go to town square",
+    ],
     "button functions": [goTown, goTown, goTown],
-    text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.'
+    text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.',
   },
   {
     name: "lose",
     "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
     "button functions": [restart, restart, restart],
-    text: "You die. &#x2620;"
+    text: "You die. &#x2620;",
   },
-  { 
-    name: "win", 
-    "button text": ["REPLAY?", "REPLAY?", "REPLAY?"], 
-    "button functions": [restart, restart, restart], 
-    text: "You defeat the dragon! YOU WIN THE GAME! &#x1F389;" 
+  {
+    name: "win",
+    "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
+    "button functions": [restart, restart, restart],
+    text: "You defeat the dragon! YOU WIN THE GAME! &#x1F389;",
   },
   {
     name: "easter egg",
     "button text": ["2", "8", "Go to town square?"],
     "button functions": [pickTwo, pickEight, goTown],
-    text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!"
-  }
+    text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!",
+  },
 ];
 
 // initialize buttons
 button1.onclick = goStore;
 button2.onclick = goCave;
 button3.onclick = fightDragon;
+
+function levelUp() {
+  player.level += 1;
+  player.xp = 0;
+  player.maxHP += 10;
+  player.attack += 2;
+  player.defense += 1;
+  player.hp = player.maxHP;
+  player.strength += 2;
+  player.defense += 1;
+  player.agility += 1;
+  player.health = player.maxHP;
+
+
+  showLevelUp();
+  updateUI();
+}
+
+function gainXP(amount) {
+  player.xp += amount;
+  if (player.xp >= getXPThreshold(player.level)) {
+    levelUp();
+  }
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById("playerLevel").innerText = ` ${player.level}`;
+  document.getElementById("playerXP").innerText = ` ${player.xp}`;
+  document.getElementById("playerHP").innerText =
+    player.hp + " / " + player.maxHP;
+    document.getElementById("playerHealthStats").innerText = `${player.health} / ${player.maxHP}`;
+    document.getElementById("playerAttack").innerText = `Attack: ${player.attack}`;
+    document.getElementById("playerDefense").innerText = `Defense: ${player.defense}`;
+    document.getElementById("playerAgility").innerText = `Agility: ${player.agility}`;
+  document.getElementById("goldText").textContent = player.gold;
+  document.getElementById("levelText").textContent = player.level;
+}
+
+function getXPThreshold(level) {
+  return level * 20;
+}
+
+function showLevelUp() {
+  let levelUpDiv = document.getElementById("levelUpMessage");
+  levelUpDiv.classList.remove("hidden");
+  levelUpDiv.classList.add("show");
+
+  levelUpSound.play();
+
+  setTimeout(() => {
+    levelUpDiv.classList.remove("show");
+    levelUpDiv.classList.add("hidden");
+  }, 3000);
+}
 
 function update(location) {
   monsterStats.style.display = "none";
@@ -106,6 +181,47 @@ function update(location) {
   text.innerHTML = location.text;
 }
 
+document.getElementById("button3").addEventListener("click", () => {
+    let battleSound = new Audio('assets/sounds/13 battle.mp3');
+    battleSound.play();
+   
+    player.health -= 10;  
+    updateUI();
+  });
+
+  document.getElementById("button1").addEventListener("click", () => {
+   // Assign the sounds depending on the location
+   if (location.name === "store") {
+    let storeSound = new Audio('assets/sounds/15419__pagancow__dorm-door-opening.wav');
+    storeSound.play();
+  } else if (location.name === "cave" || location.name === "fight") {
+    let battleSound = new Audio('assets/sounds/13 battle.mp3');
+    battleSound.play();
+  } else if (location.name === "win") {
+    playWinningGameSound();
+  } else if (location.name === "lose") {
+    playGameOverSound();
+  }
+});
+
+  function collectReward(amount) {
+    player.gold += amount;
+    let collectSound = new Audio('assets/sounds/536071__eminyildirim__coin-collect.wav');
+    collectSound.play();
+  }
+  
+
+function playGameOverSound() {
+    let gameOverSound = new Audio('assets/564046__baltiyar13__game-over-again.mp3');
+    gameOverSound.play();
+  }
+  
+  function playWinningGameSound() {
+    let winningGameSound = new Audio('assets/medieval-fanfare-6826.mp3');
+    winningGameSound.play();
+  }
+  
+  
 function goTown() {
   update(locations[0]);
 }
@@ -185,44 +301,70 @@ function goFight() {
 }
 
 function attack() {
-  text.innerText = "The " + monsters[fighting].name + " attacks.";
-  text.innerText += " You attack it with your " + weapons[currentWeapon].name + ".";
-  health -= getMonsterAttackValue(monsters[fighting].level);
-  if (isMonsterHit()) {
-    monsterHealth -= weapons[currentWeapon].power + Math.floor(Math.random() * xp) + 1;    
-  } else {
-    text.innerText += " You miss.";
-  }
-  healthText.innerText = health;
-  monsterHealthText.innerText = monsterHealth;
-  if (health <= 0) {
-    lose();
-  } else if (monsterHealth <= 0) {
-    if (fighting === 2) {
-      winGame();
+    text.innerText = "The " + monsters[fighting].name + " attacks.";
+    text.innerText +=
+      " You attack it with your " + weapons[currentWeapon].name + ".";
+    health -= getMonsterAttackValue(monsters[fighting].level);
+  
+    // Perhitungan serangan
+    if (isMonsterHit()) {
+      let damage = weapons[currentWeapon].power + player.attack + Math.floor(Math.random() * player.attack);
+      monsterHealth -= damage;
     } else {
-      defeatMonster();
+      text.innerText += " You miss.";
     }
-  }
-  if (Math.random() <= .1 && inventory.length !== 1) {
+    
+    // Perhitungan pertahanan
+    if (health < 0) health = 0; 
+    healthText.innerText = health;
+    monsterHealthText.innerText = monsterHealth;
+
+ // Periksa HP pemain dan monster
+ player.health -= getMonsterAttackValue(monsters[fighting].level);
+ if (player.health <= 0) {
+     player.health = 0;
+     lose(); // Pemain kalah jika HP mencapai 0
+ }
+ healthText.innerText = `HP: ${player.health}`;
+
+ if (monsterHealth <= 0) {
+     if (fighting === 2) {
+         winGame(); // Jika melawan dragon
+     } else {
+         defeatMonster(); // Jika melawan monster lainnya
+     }
+ }
+  // Handle weapon breakage
+  if (Math.random() <= 0.1 && inventory.length !== 1) {
     text.innerText += " Your " + inventory.pop() + " breaks.";
     currentWeapon--;
   }
+
+  // Update health UI after battle
+  healthText.innerText = health;
+  monsterHealthText.innerText = monsterHealth;
 }
 
 function getMonsterAttackValue(level) {
-  const hit = (level * 5) - (Math.floor(Math.random() * xp));
-  console.log(hit);
-  return hit > 0 ? hit : 0;
-}
+    const hit = Math.max(level * 5 - player.defense - Math.floor(Math.random() * player.agility), 0);
+    console.log(hit);
+    return hit;
+  }
 
 function isMonsterHit() {
-  return Math.random() > .2 || health < 20;
+  return Math.random() > 0.2 || health < 20;
 }
 
 function dodge() {
-  text.innerText = "You dodge the attack from the " + monsters[fighting].name;
-}
+    if (Math.random() < 0.5 + player.agility * 0.1) { // Probability dodge based on agility
+      text.innerText = "You dodge the attack from the " + monsters[fighting].name;
+      return true;
+    } else {
+      text.innerText = "You failed to dodge!";
+      return false;
+    }
+  }
+  
 
 function defeatMonster() {
   gold += Math.floor(monsters[fighting].level * 6.7);
@@ -230,13 +372,16 @@ function defeatMonster() {
   goldText.innerText = gold;
   xpText.innerText = xp;
   update(locations[4]);
+  collectReward()
 }
 
 function lose() {
+  playGameOverSound(); 
   update(locations[5]);
 }
 
 function winGame() {
+  playWinningGameSound(); 
   update(locations[6]);
 }
 
