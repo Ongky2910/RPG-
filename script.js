@@ -139,25 +139,25 @@ function gainXP(amount) {
 }
 
 function updateUI() {
+  // Update stats player
   document.getElementById("playerLevel").innerText = ` ${player.level}`;
-  document.getElementById("playerXP").innerText = ` ${player.xp}`;
-  document.getElementById("playerHP").innerText =
-    player.hp + " / " + player.maxHP;
-  document.getElementById(
-    "playerHealthStats"
-  ).innerText = `${player.health} / ${player.maxHP}`;
-  document.getElementById(
-    "playerAttack"
-  ).innerText = `Attack: ${player.attack}`;
-  document.getElementById(
-    "playerDefense"
-  ).innerText = `Defense: ${player.defense}`;
-  document.getElementById(
-    "playerAgility"
-  ).innerText = `Agility: ${player.agility}`;
+  document.getElementById("playerXPStats").innerText = ` ${player.xp}`;
+  document.getElementById("playerHP").innerText = `${player.hp} / ${player.maxHP}`;
+  document.getElementById("playerHealthStats").innerText = `${player.hp} / ${player.maxHP}`;
+  
+  // Update monster health
+  document.getElementById("monsterHealth").innerText = monsterHealth;
+  
+  // Update player stats
+  document.getElementById("playerAttack").innerText = `Attack: ${player.attack}`;
+  document.getElementById("playerDefense").innerText = `Defense: ${player.defense}`;
+  document.getElementById("playerAgility").innerText = `Agility: ${player.agility}`;
+  
+  // Update gold and level
   document.getElementById("goldText").textContent = player.gold;
   document.getElementById("levelText").textContent = player.level;
 }
+
 
 function getXPThreshold(level) {
   return level * 20;
@@ -364,12 +364,20 @@ function goFight() {
 }
 
 function attack() {
+  // Menangani serangan monster
+  let monsterDamage = getMonsterAttackValue(monsters[fighting].level);
+  player.hp -= monsterDamage;
+
+  // Pastikan HP pemain tidak kurang dari 0
+  if (player.hp <= 0) {
+    player.hp = 0;
+    lose();
+    return;
+  }
+
   text.innerText = "The " + monsters[fighting].name + " attacks.";
   text.innerText +=
     " You attack it with your " + weapons[currentWeapon].name + ".";
-  health -= getMonsterAttackValue(monsters[fighting].level);
-
-  player.health -= getMonsterAttackValue(monsters[fighting].level);
 
   // Perhitungan serangan pemain
   if (isMonsterHit()) {
@@ -378,18 +386,15 @@ function attack() {
       player.attack +
       Math.floor(Math.random() * player.attack);
     monsterHealth -= damage;
+
+    updateUI();
+    text.innerText += " You hit the " + monsters[fighting].name + "!";
   } else {
     text.innerText += " You miss.";
   }
 
-  // Pastikan HP pemain tidak kurang dari 0
-  if (player.health <= 0) {
-    player.health = 0;
-    lose(); // Pemain kalah jika HP mencapai 0
-  }
-
-  healthText.innerText = `HP: ${player.health}`;
-  monsterHealthText.innerText = monsterHealth;
+  healthText.innerText = `HP: ${player.hp}`;
+  monsterHealthText.innerText = `Monster HP: ${monsterHealth}`;
 
   // Cek apakah monster kalah
   if (monsterHealth <= 0) {
@@ -401,28 +406,35 @@ function attack() {
   }
 }
 
+// Handle weapon breakage
+if (Math.random() <= 0.1 && inventory.length !== 1) {
+  let brokenWeapon = inventory.pop(); // Senjata rusak
+  text.innerText += " Your " + brokenWeapon + " breaks.";
+  if (currentWeapon >= inventory.length) {
+    currentWeapon = inventory.length - 1;
+  }
+}
+
+// Update health UI after battle
+healthText.innerText = `HP: ${player.health}`;
+monsterHealthText.innerText = `Monster HP: ${monsterHealth}`;
+
 // Fungsi untuk mendapatkan serangan monster berdasarkan level
 function getMonsterAttackValue(level) {
-  const hit = Math.max(level * 5 - player.defense - Math.floor(Math.random() * player.agility), 0);
+  const hit = Math.max(
+    level * 5 - player.defense - Math.floor(Math.random() * player.agility),
+    0
+  );
   console.log(hit);
   return hit;
 }
 
-  if (monsterHealth <= 0) {
-    if (fighting === 2) {
-      winGame(); // Jika melawan dragon
-    } else {
-      defeatMonster(); // Jika melawan monster lainnya
-    }
-  // Handle weapon breakage
-  if (Math.random() <= 0.1 && inventory.length !== 1) {
-    text.innerText += " Your " + inventory.pop() + " breaks.";
-    currentWeapon--;
+if (monsterHealth <= 0) {
+  if (fighting === 2) {
+    winGame(); // Jika melawan dragon
+  } else {
+    defeatMonster(); // Jika melawan monster lainnya
   }
-
-  // Update health UI after battle
-  healthText.innerText = health;
-  monsterHealthText.innerText = monsterHealth;
 }
 
 function getMonsterAttackValue(level) {
@@ -435,7 +447,7 @@ function getMonsterAttackValue(level) {
 }
 
 function isMonsterHit() {
-  return Math.random() > 0.2 || health < 20;
+  return Math.random() > 0.2 || player.health < 20;
 }
 
 function dodge() {
