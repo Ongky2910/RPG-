@@ -126,8 +126,6 @@ function levelUp() {
   player.defense += 1;
   player.agility += 1;
   player.health = player.maxHP;
-
-
   showLevelUp();
   updateUI();
 }
@@ -145,10 +143,18 @@ function updateUI() {
   document.getElementById("playerXP").innerText = ` ${player.xp}`;
   document.getElementById("playerHP").innerText =
     player.hp + " / " + player.maxHP;
-    document.getElementById("playerHealthStats").innerText = `${player.health} / ${player.maxHP}`;
-    document.getElementById("playerAttack").innerText = `Attack: ${player.attack}`;
-    document.getElementById("playerDefense").innerText = `Defense: ${player.defense}`;
-    document.getElementById("playerAgility").innerText = `Agility: ${player.agility}`;
+  document.getElementById(
+    "playerHealthStats"
+  ).innerText = `${player.health} / ${player.maxHP}`;
+  document.getElementById(
+    "playerAttack"
+  ).innerText = `Attack: ${player.attack}`;
+  document.getElementById(
+    "playerDefense"
+  ).innerText = `Defense: ${player.defense}`;
+  document.getElementById(
+    "playerAgility"
+  ).innerText = `Agility: ${player.agility}`;
   document.getElementById("goldText").textContent = player.gold;
   document.getElementById("levelText").textContent = player.level;
 }
@@ -170,6 +176,60 @@ function showLevelUp() {
   }, 3000);
 }
 
+// initialize buttons
+button1.onclick = goStore;
+button2.onclick = goCave;
+button3.onclick = () => fightDragon(location.name);
+
+// Declare a variable to keep track of the current ambient sound playing
+let currentAmbientSound = null;
+
+// Function to play the sound depending on the location or action
+function playSound(locationName) {
+  let sound;
+
+  // Stop any currently playing ambient sound when changing locations
+  if (currentAmbientSound) {
+    currentAmbientSound.pause();
+    currentAmbientSound.currentTime = 0; // Reset to start
+  }
+}
+
+// Function to play sound based on location or action
+function playSound(locationName) {
+  let sound;
+  switch (locationName) {
+    case "store":
+      sound = new Audio("assets/sounds/15419__pagancow__dorm-door-opening.wav");
+      break;
+    case "cave":
+    case "fight":
+      sound = new Audio("assets/inside-a-cave-effect-240264.mp3");
+      currentAmbientSound = sound;
+      break;
+    case "win":
+      sound = new Audio("assets/sounds/win_sound.mp3");
+      break;
+    case "lose":
+      sound = new Audio("assets/sounds/lose_sound.mp3");
+      break;
+    default:
+      return; // If no sound is needed, do nothing
+  }
+  if (sound) {
+    sound.play();
+  }
+}
+
+// Fight Dragon function (Now receives location name)
+function fightDragon(locationName) {
+  // Play the battle sound when dragon is fought, regardless of location
+  playSound("fight");
+
+  // Add logic for dragon fight here (e.g., damage, health change, etc.)
+  player.health -= 10;
+  updateUI();
+}
 function update(location) {
   monsterStats.style.display = "none";
   button1.innerText = location["button text"][0];
@@ -179,49 +239,52 @@ function update(location) {
   button2.onclick = location["button functions"][1];
   button3.onclick = location["button functions"][2];
   text.innerHTML = location.text;
+
+  // Play the sound for the current location
+  playSound(location.name);
 }
 
+// Event listeners for button clicks (now simplified)
 document.getElementById("button3").addEventListener("click", () => {
-    let battleSound = new Audio('assets/sounds/13 battle.mp3');
-    battleSound.play();
-   
-    player.health -= 10;  
-    updateUI();
-  });
-
-  document.getElementById("button1").addEventListener("click", () => {
-   // Assign the sounds depending on the location
-   if (location.name === "store") {
-    let storeSound = new Audio('assets/sounds/15419__pagancow__dorm-door-opening.wav');
-    storeSound.play();
-  } else if (location.name === "cave" || location.name === "fight") {
-    let battleSound = new Audio('assets/sounds/13 battle.mp3');
-    battleSound.play();
-  } else if (location.name === "win") {
-    playWinningGameSound();
-  } else if (location.name === "lose") {
-    playGameOverSound();
+  // Check if the action is to fight dragon
+  if (location.name === "fight") {
+    playSound("fight");
   }
 });
 
-  function collectReward(amount) {
-    player.gold += amount;
-    let collectSound = new Audio('assets/sounds/536071__eminyildirim__coin-collect.wav');
-    collectSound.play();
+document.getElementById("button1").addEventListener("click", () => {
+  // Determine location based on the game context and play sound accordingly
+  if (location.name === "store") {
+    playSound("store");
+  } else if (location.name === "cave" || location.name === "fight") {
+    playSound("fight");
+  } else if (location.name === "win") {
+    playSound("win");
+  } else if (location.name === "lose") {
+    playSound("lose");
   }
-  
+});
+
+function collectReward(amount) {
+  player.gold += amount;
+  let collectSound = new Audio(
+    "assets/sounds/536071__eminyildirim__coin-collect.wav"
+  );
+  collectSound.play();
+}
 
 function playGameOverSound() {
-    let gameOverSound = new Audio('assets/564046__baltiyar13__game-over-again.mp3');
-    gameOverSound.play();
-  }
-  
-  function playWinningGameSound() {
-    let winningGameSound = new Audio('assets/medieval-fanfare-6826.mp3');
-    winningGameSound.play();
-  }
-  
-  
+  let gameOverSound = new Audio(
+    "assets/564046__baltiyar13__game-over-again.mp3"
+  );
+  gameOverSound.play();
+}
+
+function playWinningGameSound() {
+  let winningGameSound = new Audio("assets/medieval-fanfare-6826.mp3");
+  winningGameSound.play();
+}
+
 function goTown() {
   update(locations[0]);
 }
@@ -301,39 +364,56 @@ function goFight() {
 }
 
 function attack() {
-    text.innerText = "The " + monsters[fighting].name + " attacks.";
-    text.innerText +=
-      " You attack it with your " + weapons[currentWeapon].name + ".";
-    health -= getMonsterAttackValue(monsters[fighting].level);
-  
-    // Perhitungan serangan
-    if (isMonsterHit()) {
-      let damage = weapons[currentWeapon].power + player.attack + Math.floor(Math.random() * player.attack);
-      monsterHealth -= damage;
+  text.innerText = "The " + monsters[fighting].name + " attacks.";
+  text.innerText +=
+    " You attack it with your " + weapons[currentWeapon].name + ".";
+  health -= getMonsterAttackValue(monsters[fighting].level);
+
+  player.health -= getMonsterAttackValue(monsters[fighting].level);
+
+  // Perhitungan serangan pemain
+  if (isMonsterHit()) {
+    let damage =
+      weapons[currentWeapon].power +
+      player.attack +
+      Math.floor(Math.random() * player.attack);
+    monsterHealth -= damage;
+  } else {
+    text.innerText += " You miss.";
+  }
+
+  // Pastikan HP pemain tidak kurang dari 0
+  if (player.health <= 0) {
+    player.health = 0;
+    lose(); // Pemain kalah jika HP mencapai 0
+  }
+
+  healthText.innerText = `HP: ${player.health}`;
+  monsterHealthText.innerText = monsterHealth;
+
+  // Cek apakah monster kalah
+  if (monsterHealth <= 0) {
+    if (fighting === 2) {
+      winGame(); // Menang melawan dragon
     } else {
-      text.innerText += " You miss.";
+      defeatMonster(); // Menang melawan monster lainnya
     }
-    
-    // Perhitungan pertahanan
-    if (health < 0) health = 0; 
-    healthText.innerText = health;
-    monsterHealthText.innerText = monsterHealth;
+  }
+}
 
- // Periksa HP pemain dan monster
- player.health -= getMonsterAttackValue(monsters[fighting].level);
- if (player.health <= 0) {
-     player.health = 0;
-     lose(); // Pemain kalah jika HP mencapai 0
- }
- healthText.innerText = `HP: ${player.health}`;
+// Fungsi untuk mendapatkan serangan monster berdasarkan level
+function getMonsterAttackValue(level) {
+  const hit = Math.max(level * 5 - player.defense - Math.floor(Math.random() * player.agility), 0);
+  console.log(hit);
+  return hit;
+}
 
- if (monsterHealth <= 0) {
-     if (fighting === 2) {
-         winGame(); // Jika melawan dragon
-     } else {
-         defeatMonster(); // Jika melawan monster lainnya
-     }
- }
+  if (monsterHealth <= 0) {
+    if (fighting === 2) {
+      winGame(); // Jika melawan dragon
+    } else {
+      defeatMonster(); // Jika melawan monster lainnya
+    }
   // Handle weapon breakage
   if (Math.random() <= 0.1 && inventory.length !== 1) {
     text.innerText += " Your " + inventory.pop() + " breaks.";
@@ -346,25 +426,28 @@ function attack() {
 }
 
 function getMonsterAttackValue(level) {
-    const hit = Math.max(level * 5 - player.defense - Math.floor(Math.random() * player.agility), 0);
-    console.log(hit);
-    return hit;
-  }
+  const hit = Math.max(
+    level * 5 - player.defense - Math.floor(Math.random() * player.agility),
+    0
+  );
+  console.log(hit);
+  return hit;
+}
 
 function isMonsterHit() {
   return Math.random() > 0.2 || health < 20;
 }
 
 function dodge() {
-    if (Math.random() < 0.5 + player.agility * 0.1) { // Probability dodge based on agility
-      text.innerText = "You dodge the attack from the " + monsters[fighting].name;
-      return true;
-    } else {
-      text.innerText = "You failed to dodge!";
-      return false;
-    }
+  if (Math.random() < 0.5 + player.agility * 0.1) {
+    // Probability dodge based on agility
+    text.innerText = "You dodge the attack from the " + monsters[fighting].name;
+    return true;
+  } else {
+    text.innerText = "You failed to dodge!";
+    return false;
   }
-  
+}
 
 function defeatMonster() {
   gold += Math.floor(monsters[fighting].level * 6.7);
@@ -372,16 +455,16 @@ function defeatMonster() {
   goldText.innerText = gold;
   xpText.innerText = xp;
   update(locations[4]);
-  collectReward()
+  collectReward();
 }
 
 function lose() {
-  playGameOverSound(); 
+  playGameOverSound();
   update(locations[5]);
 }
 
 function winGame() {
-  playWinningGameSound(); 
+  playWinningGameSound();
   update(locations[6]);
 }
 
