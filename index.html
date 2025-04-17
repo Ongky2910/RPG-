@@ -6,14 +6,16 @@
     <title>RPG - Adventure Repeller</title>
   </head>
   <body>
+
+    <!-- Main Game Container -->
     <div id="game">
+
+      <!-- Player Stats Panel: Displays level, XP, health, and gold -->
       <div id="stats">
-        <span class="stat">Level: <strong><span id="playerLevel">1</span></strong></span>
-        <span class="stat">XP: <strong><span id="playerXPStats">0</span></strong></span> 
-        <span class="stat">Health: <strong><span id="playerHealthStats"></span></strong></span>
         <span class="stat">Gold: <strong><span id="goldText">50</span></strong></span>
       </div>
 
+      <!-- Player Detailed Stats: More specific attributes (HP, attack, defense, agility) -->
       <div id="playerStats">
         <h3>Player Stats</h3>
         <p>HP: <span id="healthText"></span></p>
@@ -23,28 +25,34 @@
         <p>Agility: <strong><span id="playerAgility">4</span></strong></p>
       </div>
       
+      <!-- Level-Up Message: This appears when the player levels up -->
       <div id="levelUpMessage" class="hidden">Level Up!</div>
       <audio id="levelUpSound" src="assets/sounds/682633__bastianhallo__level-up.ogg"></audio>
 
+      <!-- Control Buttons: For navigating between different locations and actions -->
       <div id="controls">
         <button id="button1">Go to store</button>
         <button id="button2">Go to cave</button>
         <button id="button3">Fight dragon</button>
       </div>
       
+      <!-- Monster Stats Panel: Displays monster name and health when fighting -->
       <div id="monsterStats" style="display:none;">
         <span class="stat">Monster Name: <strong><span id="monsterName"></span></strong></span>
         <span class="stat">Health: <strong><span id="monsterHealth">100</span></strong></span> 
       </div>
 
+      <!-- Game Text Area: Describes the current game state and actions -->
       <div id="text">
         Welcome to Dragon Repeller. You must defeat the dragon that is preventing people from leaving the town. You are in the town square. Where do you want to go? Use the buttons above.
       </div>
 
-      <!-- Sound -->
-  <audio id="fightSound" src="sound/fight.mp3"></audio>
-  <audio id="goldSound" src="sound/gold.mp3"></audio>
+      <!-- Sound Files -->
+      <audio id="fightSound" src="sound/fight.mp3"></audio>
+      <audio id="goldSound" src="sound/gold.mp3"></audio>
     </div>
+
+    <!-- Link to JavaScript file for functionality -->
     <script src="./script.js"></script>
   </body>
 </html>
