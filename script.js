@@ -35,6 +35,11 @@ weaponText.innerText = `Weapon: ${weapons[weaponIndex].name}`;
 document.getElementById("stats").appendChild(weaponText);
 
 window.onload = () => {
+  document.getElementById('playerStats').classList.add('fade-in-slide');
+  document.getElementById('stats').classList.add('fade-in-slide');
+  document.getElementById('text').classList.add('fade-in-slide');
+  document.getElementById('controls').classList.add('fade-in-slide');
+
   // Set initial health and XP display and stat
   document.getElementById('healthText').innerText = `${health} / 100`;
   document.getElementById('xpText').innerText = `${xp}`;
@@ -149,8 +154,43 @@ function update(location) {
 function playSound(name) {
   const fightSound = document.getElementById("fightSound");
   const goldSound = document.getElementById("goldSound");
-  if (name === "kill monster") goldSound.play();
-  if (name === "fight") fightSound.play();
+  const levelUpSound = document.getElementById("levelUpSound");
+  const attackSound = document.getElementById("attackSound");
+  const dragonFightSound = document.getElementById("dragonFightSound");
+
+  if (name === "kill monster") {
+    goldSound.play().catch((error) => {
+      console.error("Error playing gold sound:", error);
+    });
+  } else if (name === "fight") {
+    fightSound.play().catch((error) => {
+      console.error("Error playing fight sound:", error);
+    });
+  } else if (name === "level up") {
+    levelUpSound.play().catch((error) => {
+      console.error("Error playing level up sound:", error);
+    });
+  } else if (name === "attack") {
+    attackSound.play().catch((error) => {
+      console.error("Error playing attack sound:", error);
+    });
+  } else if (name === "dragon fight") {  
+    dragonFightSound.play().catch((error) => {
+      console.error("Error playing dragon fight sound:", error);
+    });
+  }
+}
+
+function stopSound() {
+  const fightSound = document.getElementById("fightSound");
+  const dragonFightSound = document.getElementById("dragonFightSound");
+
+  // Stop all sounds
+  fightSound.pause();
+  fightSound.currentTime = 0;
+
+  dragonFightSound.pause();
+  dragonFightSound.currentTime = 0;
 }
 
 function goTown() {
@@ -213,6 +253,15 @@ function levelUp() {
   healthText.innerText = `Health: ${health}`;
   levelText.innerText = `Level: ${level}`;
   text.innerText = `🎉 Level Up! You are now Level ${level}`;
+  // Level up message animation
+  const levelUpMessage = document.getElementById('levelUpMessage');
+  levelUpMessage.classList.add('show');
+
+ setTimeout(() => {
+    levelUpMessage.classList.remove('show');
+  }, 5000);
+  const levelUpSound = new Audio('assets/sounds/682633__bastianhallo__level-up.ogg'); 
+  levelUpSound.play();
   
   updateStats();
 }
@@ -264,6 +313,17 @@ function fightMonster(index) {
   update(locations[3]);
 }
 
+function shakeMonster() {
+  const monsterStats = document.getElementById("monsterStats");
+  
+  monsterStats.classList.add("shake");
+  
+  // Hapus class shake setelah animasi selesai (dalam 600ms)
+  setTimeout(() => {
+    monsterStats.classList.remove("shake");
+  }, 600);
+}
+
 function attack() {
   animateAttack();
 
@@ -271,6 +331,8 @@ function attack() {
   // Mengurangi health monster
   currentMonster.health -= Math.floor(Math.random() * 10 + 1);
   monsterHealth.innerText = currentMonster.health;
+
+  shakeMonster();
 
   // Jika monster mati
   if (currentMonster.health <= 0) {
@@ -327,12 +389,29 @@ function dodge() {
   text.innerText = "You dodged the attack!";
 }
 function fightDragon() {
+  playSound("dragon fight");
   currentMonster = { ...monsters[2] };
   monsterStats.style.display = "block";
   monsterName.innerText = currentMonster.name;
   monsterHealth.innerText = currentMonster.health;
   update(locations[3]);
 }
+
+function exitFight() {
+  // Hentikan suara jika ada
+  stopSound();
+
+  // Perubahan tampilan atau logika lainnya ketika keluar atau pindah lokasi
+  update(locations[0]);  // misalnya kembali ke kota atau lokasi awal
+}
+
+// Event listener untuk tombol "Fight Dragon"
+document.getElementById("button3").addEventListener("click", fightDragon);
+
+// Event listener untuk tombol keluar atau pindah lokasi (misalnya tombol "Go to store")
+document.getElementById("button1").addEventListener("click", exitFight);
+document.getElementById("button2").addEventListener("click", exitFight);
+
 
 function restart() {
   xp = 0;

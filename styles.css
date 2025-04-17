@@ -68,10 +68,92 @@ body {
 #stats .stat {
   margin: 0 10px;
 }
+
+.fade-in-slide {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInSlide 0.6s ease-out forwards;
+}
+
+@keyframes fadeInSlide {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes flashRed {
+  0% {
+    background-color: #c70d0d;
+  }
+  50% {
+    background-color: #ff0000; 
+  }
+  100% {
+    background-color: #c70d0d;
+  }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+  100% { transform: translateX(0); }
+}
+
+.shake {
+  animation: shake 0.5s ease, flashRed 0.6s ease;
+}
+
+@keyframes goldEffect {
+  0% {
+    transform: scale(1);
+    color: #f1c40f; /* Warna Gold */
+  }
+  50% {
+    transform: scale(1.2); /* Membesar */
+    color: #f39c12;
+  }
+  100% {
+    transform: scale(1); /* Kembali ke ukuran semula */
+    color: #f1c40f;
+  }
+}
+
+.goldEffect {
+  animation: goldEffect 1s ease-out;
+}
+
+/* Level Up Animasi */
+@keyframes levelUpGlow {
+  0% {
+    text-shadow: 0 0 10px #f39c12, 0 0 20px #f39c12, 0 0 30px #f39c12;
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 0 0 30px #f39c12, 0 0 50px #f39c12, 0 0 70px #f39c12;
+    transform: scale(1.1);
+  }
+  100% {
+    text-shadow: 0 0 10px #f39c12, 0 0 20px #f39c12, 0 0 30px #f39c12;
+    transform: scale(1);
+  }
+}
+
   
 /* Monster Stats Panel */
 #monsterStats {
-  display: none;
   background-color: #c70d0d;
   color: #ffffff;
   padding: 10px;
@@ -113,28 +195,24 @@ button:hover {
 }
 
 #levelUpMessage {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: linear-gradient(45deg, #FFD700, #FF8C00);
-    color: white;
-    font-size: 2.5rem;
-    font-weight: bold;
-    padding: 20px 50px;
-    border-radius: 15px;
-    text-align: center;
-    box-shadow: 0 0 20px rgba(255, 165, 0, 0.9);
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-    z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+  font-size: 2rem;
+  color: gold;
+  text-align: center;
+  margin: 10px 0;
 }
 
 #levelUpMessage.show {
-    opacity: 1;
-    animation: levelUpEffect 1s ease-out;
-    text-shadow: 0px 0px 10px rgba(255, 255, 255, 1);
+  opacity: 1;
+  animation: levelUpGlow 1.5s ease-out infinite alternate;
 }
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-15px); }
+}
+
 
 #levelUpMessage.hidden {
     opacity: 0;
@@ -177,7 +255,10 @@ audio {
     width: 90%;
     padding: 15px;
   }
-
+  #levelUpMessage {
+    font-size: 1.5rem;
+  }
+  
   button {
     width: 100%;
     font-size: 14px;
