@@ -3,21 +3,21 @@
   <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="./styles.css">
-    <title>RPG - Dragon Repeller</title>
+    <title>RPG - Adventure Repeller</title>
   </head>
   <body>
     <div id="game">
       <div id="stats">
         <span class="stat">Level: <strong><span id="playerLevel">1</span></strong></span>
-        <span class="stat">XP: <strong><span id="playerXPStats">0</span></strong></span> <!-- Corrected ID -->
-        <span class="stat">Health: <strong><span id="playerHealthStats">100</span></strong></span>
+        <span class="stat">XP: <strong><span id="playerXPStats">0</span></strong></span> 
+        <span class="stat">Health: <strong><span id="playerHealthStats"></span></strong></span>
         <span class="stat">Gold: <strong><span id="goldText">50</span></strong></span>
       </div>
 
       <div id="playerStats">
         <h3>Player Stats</h3>
-        <p>HP: <span id="healthText">100 / 100</span></p>
-        <p>XP: <strong><span id="xpText">0</span></strong></p> <!-- Corrected ID -->
+        <p>HP: <span id="healthText"></span></p>
+        <p>XP: <strong><span id="xpText">0</span></strong></p> 
         <p>Attack: <strong><span id="playerAttack">5</span></strong></p>
         <p>Defense: <strong><span id="playerDefense">3</span></strong></p>
         <p>Agility: <strong><span id="playerAgility">4</span></strong></p>
@@ -32,14 +32,18 @@
         <button id="button3">Fight dragon</button>
       </div>
       
-      <div id="monsterStats">
+      <div id="monsterStats" style="display:none;">
         <span class="stat">Monster Name: <strong><span id="monsterName"></span></strong></span>
-        <span class="stat">Health: <strong><span id="monsterHealth">100</span></strong></span> <!-- Corrected ID -->
+        <span class="stat">Health: <strong><span id="monsterHealth">100</span></strong></span> 
       </div>
 
       <div id="text">
         Welcome to Dragon Repeller. You must defeat the dragon that is preventing people from leaving the town. You are in the town square. Where do you want to go? Use the buttons above.
       </div>
+
+      <!-- Sound -->
+  <audio id="fightSound" src="sound/fight.mp3"></audio>
+  <audio id="goldSound" src="sound/gold.mp3"></audio>
     </div>
     <script src="./script.js"></script>
   </body>

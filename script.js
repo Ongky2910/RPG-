@@ -1,528 +1,344 @@
 let xp = 0;
+let level = 1;
+let maxXP = 100; 
 let health = 100;
 let gold = 50;
-let currentWeapon = 0;
-let fighting;
-let monsterHealth;
-let inventory = ["stick"];
+let currentMonster;
+let currentLocation;
+let weaponIndex = 0;
+const weapons = [
+  { name: "Wooden Stick", power: 5 },
+  { name: "Hammer", power: 10, cost: 20 },
+  { name: "Axe", power: 20, cost: 40 },
+  { name: "Katana", power: 30, cost: 60 },
+  { name: "Sword", power: 50, cost: 80 }
+];
 
-let player = {
-  level: 1,
-  xp: 0,
-  health: 100,
-  maxHP: 100,
-  gold: 50,
-  attack: 5,
-  defense: 2,
-  agility: 1,
-  inventory: ["stick"],
+
+const button1 = document.getElementById("button1");
+const button2 = document.getElementById("button2");
+const button3 = document.getElementById("button3");
+const text = document.getElementById("text");
+const xpText = document.getElementById("xpText");
+const healthText = document.getElementById('healthText');
+healthText.innerText = `${health} / 100`;
+const goldText = document.getElementById("goldText");
+const monsterStats = document.getElementById("monsterStats");
+const monsterName = document.getElementById("monsterName");
+const monsterHealth = document.getElementById("monsterHealth");
+const weaponText = document.createElement("div");
+weaponText.id = "weaponText";
+weaponText.innerText = `Weapon: ${weapons[weaponIndex].name}`;
+document.getElementById("stats").appendChild(weaponText);
+
+window.onload = () => {
+  // Set initial health and XP display
+  document.getElementById('healthText').innerText = `${health} / 100`;
+  document.getElementById('xpText').innerText = `${xp}`;
+  goTown();
 };
 
-const button1 = document.querySelector("#button1");
-const button2 = document.querySelector("#button2");
-const button3 = document.querySelector("#button3");
-const text = document.querySelector("#text");
-const xpText = document.querySelector("#xpText");
-const healthText = document.querySelector("#healthText");
-const goldText = document.querySelector("#goldText");
-const monsterStats = document.querySelector("#monsterStats");
-const monsterName = document.querySelector("#monsterName");
-const monsterHealthText = document.querySelector("#monsterHealth");
-const weapons = [
-  { name: "stick", power: 5 },
-  { name: "dagger", power: 30 },
-  { name: "claw hammer", power: 50 },
-  { name: "sword", power: 100 },
-];
+// LevelUp function
+const levelText = document.createElement("span");
+levelText.id = "levelText";
+levelText.innerText = `Level: ${level}`;
+document.getElementById("stats").appendChild(levelText);
+
+// XP progress wrapper
+const xpBarWrapper = document.createElement("div");
+xpBarWrapper.style.height = "20px";
+xpBarWrapper.style.width = "100%";
+xpBarWrapper.style.background = "#333";
+xpBarWrapper.style.marginTop = "5px";
+xpBarWrapper.style.position = "relative";
+xpBarWrapper.style.borderRadius = "5px";
+
+// Inner bar (progress)
+const xpProgress = document.createElement("div");
+xpProgress.id = "xpProgress";
+xpProgress.style.height = "100%";
+xpProgress.style.width = "0%";
+xpProgress.style.background = "#4caf50";
+xpProgress.style.borderRadius = "5px";
+xpProgress.style.transition = "width 0.3s ease";
+
+// Text di dalam bar
+const xpLabel = document.createElement("span");
+xpLabel.id = "xpLabel";
+xpLabel.innerText = `XP: ${xp} / ${maxXP}`;
+xpLabel.style.position = "absolute";
+xpLabel.style.left = "50%";
+xpLabel.style.top = "50%";
+xpLabel.style.transform = "translate(-50%, -50%)";
+xpLabel.style.color = "#fff";
+xpLabel.style.fontSize = "12px";
+xpLabel.style.fontWeight = "bold";
+
+xpBarWrapper.appendChild(xpProgress);
+xpBarWrapper.appendChild(xpLabel);
+document.getElementById("stats").appendChild(xpBarWrapper);
+
+
 const monsters = [
-  {
-    name: "slime",
-    level: 2,
-    health: 15,
-  },
-  {
-    name: "fanged beast",
-    level: 8,
-    health: 60,
-  },
-  {
-    name: "dragon",
-    level: 20,
-    health: 300,
-  },
+  { name: "Slime", level: 2, health: 15 },
+  { name: "Fanged Beast", level: 8, health: 60 },
+  { name: "Dragon", level: 20, health: 300 }
 ];
+
 const locations = [
   {
     name: "town square",
-    "button text": ["Go to store", "Go to cave", "Fight dragon"],
-    "button functions": [goStore, goCave, fightDragon],
-    text: 'You are in the town square. You see a sign that says "Store".',
+    buttonText: ["Go Store", "Go Cave", "Fight Dragon"],
+    buttonFunctions: [goStore, goCave, fightDragon],
+    text: "You are in the town square. You see a sign that says \"Store\"."
   },
   {
     name: "store",
-    "button text": [
-      "Buy 10 health (10 gold)",
-      "Buy weapon (30 gold)",
-      "Go to town square",
-    ],
-    "button functions": [buyHealth, buyWeapon, goTown],
-    text: "You enter the store.",
+    buttonText: ["Buy 10 Health (10 gold)", "Buy Sword (30 gold)", "Go Town"],
+    buttonFunctions: [buyHealth, buySword, goTown],
+    text: "You enter the store."
   },
   {
     name: "cave",
-    "button text": ["Fight slime", "Fight fanged beast", "Go to town square"],
-    "button functions": [fightSlime, fightBeast, goTown],
-    text: "You enter the cave. You see some monsters.",
+    buttonText: ["Fight Slime", "Fight Beast", "Go Town"],
+    buttonFunctions: [() => fightMonster(0), () => fightMonster(1), goTown],
+    text: "You enter the cave. You see some monsters."
   },
   {
     name: "fight",
-    "button text": ["Attack", "Dodge", "Run"],
-    "button functions": [attack, dodge, goTown],
-    text: "You are fighting a monster.",
+    buttonText: ["Attack", "Dodge", "Run"],
+    buttonFunctions: [attack, dodge, goTown],
+    text: "You are fighting a monster."
   },
   {
     name: "kill monster",
-    "button text": [
-      "Go to town square",
-      "Go to town square",
-      "Go to town square",
-    ],
-    "button functions": [goTown, goTown, goTown],
-    text: 'The monster screams "Arg!" as it dies. You gain experience points and find gold.',
+    buttonText: ["Go Town", "Go Town", "Go Town"],
+    buttonFunctions: [goTown, goTown, goTown],
+    text: 'The monster screams "Arg!" as it dies. You gain experience and find gold.'
   },
   {
     name: "lose",
-    "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
-    "button functions": [restart, restart, restart],
-    text: "You die. &#x2620;",
+    buttonText: ["REPLAY?", "REPLAY?", "REPLAY?"],
+    buttonFunctions: [restart, restart, restart],
+    text: "You die. ☠️"
   },
   {
     name: "win",
-    "button text": ["REPLAY?", "REPLAY?", "REPLAY?"],
-    "button functions": [restart, restart, restart],
-    text: "You defeat the dragon! YOU WIN THE GAME! &#x1F389;",
-  },
-  {
-    name: "easter egg",
-    "button text": ["2", "8", "Go to town square?"],
-    "button functions": [pickTwo, pickEight, goTown],
-    text: "You find a secret game. Pick a number above. Ten numbers will be randomly chosen between 0 and 10. If the number you choose matches one of the random numbers, you win!",
-  },
+    buttonText: ["REPLAY?", "REPLAY?", "REPLAY?"],
+    buttonFunctions: [restart, restart, restart],
+    text: "You defeat the dragon! 🎉 YOU WIN THE GAME!"
+  }
 ];
 
-// initialize buttons
-button1.onclick = goStore;
-button2.onclick = goCave;
-button3.onclick = fightDragon;
-
-function levelUp() {
-  player.level += 1;
-  player.xp = 0;
-  player.maxHP += 10;
-  player.attack += 2;
-  player.defense += 1;
-  player.hp = player.maxHP;
-  player.strength += 2;
-  player.defense += 1;
-  player.agility += 1;
-  player.health = player.maxHP;
-  showLevelUp();
-  updateUI();
-}
-
-function gainXP(amount) {
-  player.xp += amount;
-  if (player.xp >= getXPThreshold(player.level)) {
-    levelUp();
-  }
-  updateUI();
-}
-
-function updateUI() {
-  // Update stats player
-  document.getElementById("playerLevel").innerText = ` ${player.level}`;
-  document.getElementById("playerXPStats").innerText = ` ${player.xp}`;
-  document.getElementById("playerHP").innerText = `${player.hp} / ${player.maxHP}`;
-  document.getElementById("playerHealthStats").innerText = `${player.hp} / ${player.maxHP}`;
-  
-  // Update monster health
-  document.getElementById("monsterHealth").innerText = monsterHealth;
-  
-  // Update player stats
-  document.getElementById("playerAttack").innerText = `Attack: ${player.attack}`;
-  document.getElementById("playerDefense").innerText = `Defense: ${player.defense}`;
-  document.getElementById("playerAgility").innerText = `Agility: ${player.agility}`;
-  
-  // Update gold and level
-  document.getElementById("goldText").textContent = player.gold;
-  document.getElementById("levelText").textContent = player.level;
-}
-
-
-function getXPThreshold(level) {
-  return level * 20;
-}
-
-function showLevelUp() {
-  let levelUpDiv = document.getElementById("levelUpMessage");
-  levelUpDiv.classList.remove("hidden");
-  levelUpDiv.classList.add("show");
-
-  levelUpSound.play();
-
-  setTimeout(() => {
-    levelUpDiv.classList.remove("show");
-    levelUpDiv.classList.add("hidden");
-  }, 3000);
-}
-
-// initialize buttons
-button1.onclick = goStore;
-button2.onclick = goCave;
-button3.onclick = () => fightDragon(location.name);
-
-// Declare a variable to keep track of the current ambient sound playing
-let currentAmbientSound = null;
-
-// Function to play the sound depending on the location or action
-function playSound(locationName) {
-  let sound;
-
-  // Stop any currently playing ambient sound when changing locations
-  if (currentAmbientSound) {
-    currentAmbientSound.pause();
-    currentAmbientSound.currentTime = 0; // Reset to start
-  }
-}
-
-// Function to play sound based on location or action
-function playSound(locationName) {
-  let sound;
-  switch (locationName) {
-    case "store":
-      sound = new Audio("assets/sounds/15419__pagancow__dorm-door-opening.wav");
-      break;
-    case "cave":
-    case "fight":
-      sound = new Audio("assets/inside-a-cave-effect-240264.mp3");
-      currentAmbientSound = sound;
-      break;
-    case "win":
-      sound = new Audio("assets/sounds/win_sound.mp3");
-      break;
-    case "lose":
-      sound = new Audio("assets/sounds/lose_sound.mp3");
-      break;
-    default:
-      return; // If no sound is needed, do nothing
-  }
-  if (sound) {
-    sound.play();
-  }
-}
-
-// Fight Dragon function (Now receives location name)
-function fightDragon(locationName) {
-  // Play the battle sound when dragon is fought, regardless of location
-  playSound("fight");
-
-  // Add logic for dragon fight here (e.g., damage, health change, etc.)
-  player.health -= 10;
-  updateUI();
-}
 function update(location) {
-  monsterStats.style.display = "none";
-  button1.innerText = location["button text"][0];
-  button2.innerText = location["button text"][1];
-  button3.innerText = location["button text"][2];
-  button1.onclick = location["button functions"][0];
-  button2.onclick = location["button functions"][1];
-  button3.onclick = location["button functions"][2];
-  text.innerHTML = location.text;
-
-  // Play the sound for the current location
+  currentLocation = location;
+  text.innerText = location.text;
+  button1.innerText = location.buttonText[0];
+  button2.innerText = location.buttonText[1];
+  button3.innerText = location.buttonText[2];
+  button1.onclick = location.buttonFunctions[0];
+  button2.onclick = location.buttonFunctions[1];
+  button3.onclick = location.buttonFunctions[2];
   playSound(location.name);
 }
 
-// Event listeners for button clicks (now simplified)
-document.getElementById("button3").addEventListener("click", () => {
-  // Check if the action is to fight dragon
-  if (location.name === "fight") {
-    playSound("fight");
-  }
-});
-
-document.getElementById("button1").addEventListener("click", () => {
-  // Determine location based on the game context and play sound accordingly
-  if (location.name === "store") {
-    playSound("store");
-  } else if (location.name === "cave" || location.name === "fight") {
-    playSound("fight");
-  } else if (location.name === "win") {
-    playSound("win");
-  } else if (location.name === "lose") {
-    playSound("lose");
-  }
-});
-
-function collectReward(amount) {
-  player.gold += amount;
-  let collectSound = new Audio(
-    "assets/sounds/536071__eminyildirim__coin-collect.wav"
-  );
-  collectSound.play();
-}
-
-function playGameOverSound() {
-  let gameOverSound = new Audio(
-    "assets/564046__baltiyar13__game-over-again.mp3"
-  );
-  gameOverSound.play();
-}
-
-function playWinningGameSound() {
-  let winningGameSound = new Audio("assets/medieval-fanfare-6826.mp3");
-  winningGameSound.play();
+function playSound(name) {
+  const fightSound = document.getElementById("fightSound");
+  const goldSound = document.getElementById("goldSound");
+  if (name === "kill monster") goldSound.play();
+  if (name === "fight") fightSound.play();
 }
 
 function goTown() {
   update(locations[0]);
 }
-
 function goStore() {
-  update(locations[1]);
+  const weapon = weapons[weaponIndex + 1];
+  update({
+    name: "store",
+    buttonText: [
+      "Buy 10 Health (10 gold)",
+      weapon ? `Buy ${weapon.name} (${weapon.cost} gold)` : "Max Weapon Reached",
+      "Go Town"
+    ],
+    buttonFunctions: [
+      buyHealth,
+      weapon ? buyWeapon : () => text.innerText = "You already have the best weapon!",
+      goTown
+    ],
+    text: "You enter the store."
+  });
+}
+
+function animateWeaponUpgrade() {
+  weaponText.style.transition = "transform 0.3s, color 0.3s";
+  weaponText.style.transform = "scale(1.3)";
+  weaponText.style.color = "#ffcc00";
+  setTimeout(() => {
+    weaponText.style.transform = "scale(1)";
+    weaponText.style.color = "#fff";
+  }, 300);
+}
+
+function buyWeapon() {
+  const nextWeapon = weapons[weaponIndex + 1];
+  if (gold >= nextWeapon.cost) {
+    gold -= nextWeapon.cost;
+    weaponIndex++;
+    goldText.innerText = `Gold: ${gold}`;
+    weaponText.innerText = `Weapon: ${weapons[weaponIndex].name}`;
+    text.innerText = `🔥 You upgraded to ${weapons[weaponIndex].name}!`;
+    animateWeaponUpgrade();
+    goStore(); 
+  } else {
+    text.innerText = "Not enough gold!";
+  }
 }
 
 function goCave() {
   update(locations[2]);
 }
 
+function gainXP(amount) {
+  xp += amount;
+  while (xp >= maxXP) {
+    xp -= maxXP;
+    levelUp();
+  }
+  updateXPBar();
+}
+
+function levelUp() {
+  level++;
+  maxXP = Math.floor(maxXP * 1.25); 
+  health += 20;
+  healthText.innerText = `Health: ${health}`;
+  levelText.innerText = `Level: ${level}`;
+  text.innerText = `🎉 Level Up! You are now Level ${level}`;
+}
+
+
+function updateXPBar() {
+  const progress = (xp / maxXP) * 100;
+  xpProgress.style.width = `${progress}%`;
+  xpLabel.innerText = `XP: ${xp} / ${maxXP}`;
+}
+
+
 function buyHealth() {
   if (gold >= 10) {
     gold -= 10;
     health += 10;
-    goldText.innerText = gold;
-    healthText.innerText = health;
+    goldText.innerText = `Gold: ${gold}`;
+    healthText.innerText = `Health: ${health}`;
   } else {
-    text.innerText = "You do not have enough gold to buy health.";
+    text.innerText = "Not enough gold!";
   }
 }
-
-function buyWeapon() {
-  if (currentWeapon < weapons.length - 1) {
-    if (gold >= 30) {
-      gold -= 30;
-      currentWeapon++;
-      goldText.innerText = gold;
-      let newWeapon = weapons[currentWeapon].name;
-      text.innerText = "You now have a " + newWeapon + ".";
-      inventory.push(newWeapon);
-      text.innerText += " In your inventory you have: " + inventory;
-    } else {
-      text.innerText = "You do not have enough gold to buy a weapon.";
-    }
+function buySword() {
+  if (gold >= 30) {
+    gold -= 30;
+    goldText.innerText = `Gold: ${gold}`;
+    text.innerText = "You bought a sword!";
   } else {
-    text.innerText = "You already have the most powerful weapon!";
-    button2.innerText = "Sell weapon for 15 gold";
-    button2.onclick = sellWeapon;
+    text.innerText = "Not enough gold!";
   }
 }
-
-function sellWeapon() {
-  if (inventory.length > 1) {
-    gold += 15;
-    goldText.innerText = gold;
-    let currentWeapon = inventory.shift();
-    text.innerText = "You sold a " + currentWeapon + ".";
-    text.innerText += " In your inventory you have: " + inventory;
-  } else {
-    text.innerText = "Don't sell your only weapon!";
-  }
-}
-
-function fightSlime() {
-  fighting = 0;
-  goFight();
-}
-
-function fightBeast() {
-  fighting = 1;
-  goFight();
-}
-
-function fightDragon() {
-  fighting = 2;
-  goFight();
-}
-
-function goFight() {
-  update(locations[3]);
-  monsterHealth = monsters[fighting].health;
+function fightMonster(index) {
+  currentMonster = { ...monsters[index] };
   monsterStats.style.display = "block";
-  monsterName.innerText = monsters[fighting].name;
-  monsterHealthText.innerText = monsterHealth;
+  monsterName.innerText = currentMonster.name;
+  monsterHealth.innerText = currentMonster.health;
+  update(locations[3]);
 }
 
 function attack() {
-  // Menangani serangan monster
-  let monsterDamage = getMonsterAttackValue(monsters[fighting].level);
-  player.hp -= monsterDamage;
+  animateAttack();
 
-  // Pastikan HP pemain tidak kurang dari 0
-  if (player.hp <= 0) {
-    player.hp = 0;
-    lose();
+  const playerDamage = Math.floor(Math.random() * 10 + 1);
+  // Mengurangi health monster
+  currentMonster.health -= Math.floor(Math.random() * 10 + 1);
+  monsterHealth.innerText = currentMonster.health;
+
+  // Jika monster mati
+  if (currentMonster.health <= 0) {
+    gainXP(currentMonster.level * 10);
+    gold += Math.floor(currentMonster.level * 3.5);
+    goldText.innerText = `Gold: ${gold}`;
+    updateXPBar();
+    text.innerText = `You attacked for ${playerDamage} damage and defeated the monster!`;
+    update(locations[4]);  // Update lokasi setelah mengalahkan monster
+  } else {
+    // Jika monster masih hidup, monster menyerang balik
+    const monsterDamage = currentMonster.level * 5; // Damage monster berdasarkan level
+    takeDamage(monsterDamage);  // Player menerima damage
+  // Mengecek apakah player masih hidup
+  if (health <= 0) {
+    text.innerText = `You attacked for ${playerDamage} damage.\nBut the ${currentMonster.name} counterattacked for ${monsterDamage} damage.\nYou died. ☠️`;
+    update(locations[5]);
+  } else {
+    text.innerText = `You attacked the ${currentMonster.name} for ${playerDamage} damage.\nThe ${currentMonster.name} hit you back for ${monsterDamage} damage.`;
+  }
+}
+}
+
+
+// Fungsi untuk mengurangi health player saat menerima damage
+function takeDamage(damage) {
+  health -= damage;
+
+  // Pastikan health tidak kurang dari 0
+  if (health <= 0) {
+    health = 0;
+    document.getElementById('healthText').innerText = `0 / 100`;
+    alert("Game Over! Kamu mati!");
     return;
   }
 
-  text.innerText = "The " + monsters[fighting].name + " attacks.";
-  text.innerText +=
-    " You attack it with your " + weapons[currentWeapon].name + ".";
+  // Update health text di UI
+  const healthText = document.getElementById('healthText');
+  const playerHealthStats = document.getElementById('playerHealthStats');
 
-  // Perhitungan serangan pemain
-  if (isMonsterHit()) {
-    let damage =
-      weapons[currentWeapon].power +
-      player.attack +
-      Math.floor(Math.random() * player.attack);
-    monsterHealth -= damage;
-
-    updateUI();
-    text.innerText += " You hit the " + monsters[fighting].name + "!";
-  } else {
-    text.innerText += " You miss.";
-  }
-
-  healthText.innerText = `HP: ${player.hp}`;
-  monsterHealthText.innerText = `Monster HP: ${monsterHealth}`;
-
-  // Cek apakah monster kalah
-  if (monsterHealth <= 0) {
-    if (fighting === 2) {
-      winGame(); // Menang melawan dragon
-    } else {
-      defeatMonster(); // Menang melawan monster lainnya
-    }
-  }
+  healthText.innerText = `${health} / 100`;
+  playerHealthStats.innerText = `${health}`;
 }
 
-// Handle weapon breakage
-if (Math.random() <= 0.1 && inventory.length !== 1) {
-  let brokenWeapon = inventory.pop(); // Senjata rusak
-  text.innerText += " Your " + brokenWeapon + " breaks.";
-  if (currentWeapon >= inventory.length) {
-    currentWeapon = inventory.length - 1;
-  }
-}
-
-// Update health UI after battle
-healthText.innerText = `HP: ${player.health}`;
-monsterHealthText.innerText = `Monster HP: ${monsterHealth}`;
-
-// Fungsi untuk mendapatkan serangan monster berdasarkan level
-function getMonsterAttackValue(level) {
-  const hit = Math.max(
-    level * 5 - player.defense - Math.floor(Math.random() * player.agility),
-    0
-  );
-  console.log(hit);
-  return hit;
-}
-
-if (monsterHealth <= 0) {
-  if (fighting === 2) {
-    winGame(); // Jika melawan dragon
-  } else {
-    defeatMonster(); // Jika melawan monster lainnya
-  }
-}
-
-function getMonsterAttackValue(level) {
-  const hit = Math.max(
-    level * 5 - player.defense - Math.floor(Math.random() * player.agility),
-    0
-  );
-  console.log(hit);
-  return hit;
-}
-
-function isMonsterHit() {
-  return Math.random() > 0.2 || player.health < 20;
+function animateAttack() {
+  text.style.transition = "transform 0.1s";
+  text.style.transform = "scale(1.1)";
+  setTimeout(() => {
+    text.style.transform = "scale(1)";
+  }, 100);
 }
 
 function dodge() {
-  if (Math.random() < 0.5 + player.agility * 0.1) {
-    // Probability dodge based on agility
-    text.innerText = "You dodge the attack from the " + monsters[fighting].name;
-    return true;
-  } else {
-    text.innerText = "You failed to dodge!";
-    return false;
-  }
+  text.innerText = "You dodged the attack!";
 }
-
-function defeatMonster() {
-  gold += Math.floor(monsters[fighting].level * 6.7);
-  xp += monsters[fighting].level;
-  goldText.innerText = gold;
-  xpText.innerText = xp;
-  update(locations[4]);
-  collectReward();
-}
-
-function lose() {
-  playGameOverSound();
-  update(locations[5]);
-}
-
-function winGame() {
-  playWinningGameSound();
-  update(locations[6]);
+function fightDragon() {
+  currentMonster = { ...monsters[2] };
+  monsterStats.style.display = "block";
+  monsterName.innerText = currentMonster.name;
+  monsterHealth.innerText = currentMonster.health;
+  update(locations[3]);
 }
 
 function restart() {
   xp = 0;
+  level = 1;
+  maxXP = 100;
   health = 100;
   gold = 50;
-  currentWeapon = 0;
-  inventory = ["stick"];
-  goldText.innerText = gold;
-  healthText.innerText = health;
-  xpText.innerText = xp;
+
+  xpText.innerText = `${xp}`;
+  healthText.innerText = `${health} / 100`;
+  goldText.innerText = `Gold: ${gold}`;
+  levelText.innerText = `Level: ${level}`;
+  monsterStats.style.display = "none";
+  updateXPBar();
   goTown();
 }
 
-function easterEgg() {
-  update(locations[7]);
-}
 
-function pickTwo() {
-  pick(2);
-}
-
-function pickEight() {
-  pick(8);
-}
-
-function pick(guess) {
-  const numbers = [];
-  while (numbers.length < 10) {
-    numbers.push(Math.floor(Math.random() * 11));
-  }
-  text.innerText = "You picked " + guess + ". Here are the random numbers:\n";
-  for (let i = 0; i < 10; i++) {
-    text.innerText += numbers[i] + "\n";
-  }
-  if (numbers.includes(guess)) {
-    text.innerText += "Right! You win 20 gold!";
-    gold += 20;
-    goldText.innerText = gold;
-  } else {
-    text.innerText += "Wrong! You lose 10 health!";
-    health -= 10;
-    healthText.innerText = health;
-    if (health <= 0) {
-      lose();
-    }
-  }
-}
+window.onload = () => {
+  goTown();
+};
