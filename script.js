@@ -155,9 +155,22 @@ function playSound(name) {
   const fightSound = document.getElementById("fightSound");
   const goldSound = document.getElementById("goldSound");
   const levelUpSound = document.getElementById("levelUpSound");
-  if (name === "kill monster") goldSound.play();
-  if (name === "fight") fightSound.play();
+
+  console.log("playSound called with:", name);
+
+  if (name === "kill monster") {
+    goldSound.play();
+  }
+  if (name === "fight") {
+    fightSound.play();
+  }
+  if (name === "level up") {
+
+    levelUpSound.play();
+  }
 }
+
+levelUpSound.addEventListener('play', () => console.log("levelUpSound is playing"));
 
 function goTown() {
   update(locations[0]);
@@ -186,14 +199,43 @@ function buyWeapon() {
     gold -= nextWeapon.cost;
     weaponIndex++;
     goldText.innerText = `Gold: ${gold}`;
+    
+    // Update weapon text
     weaponText.innerText = `Weapon: ${weapons[weaponIndex].name}`;
+
+    // Tampilkan pesan upgrade dan animasi
+    setTimeout(() => {
+    console.log("Weapon upgraded to: " + weapons[weaponIndex].name); 
     text.innerText = `🔥 You upgraded to ${weapons[weaponIndex].name}!`;
+    }, 300); 
+
+    // Animasi dan suara untuk upgrade senjata
     animateWeaponUpgrade();
+    
+    // Kembali ke toko
     goStore();
   } else {
     text.innerText = "Not enough gold!";
   }
 }
+
+function animateWeaponUpgrade() {
+  const weaponTextEl = document.getElementById("weaponText");
+
+  // Tambah animasi (memperbesar dan memberi warna gold pada teks)
+  weaponTextEl.classList.add("weapon-animate");
+
+  // Hapus animasi setelah selesai
+  setTimeout(() => {
+    weaponTextEl.classList.remove("weapon-animate");
+  }, 600);
+
+  // Efek suara upgrade senjata
+  const upgradeSound = new Audio("assets/sounds/upgrade.mp3"); // Pastikan file suara ada
+  upgradeSound.play();
+}
+
+
 
 function goCave() {
   update(locations[2]);
@@ -226,9 +268,9 @@ function levelUp() {
  setTimeout(() => {
     levelUpMessage.classList.remove('show');
   }, 5000);
-  const levelUpSound = new Audio('assets/sounds/682633__bastianhallo__level-up.ogg'); 
-  levelUpSound.play();
   
+  playSound("level up");
+
   updateStats();
 }
 

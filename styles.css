@@ -151,6 +151,16 @@ body {
   }
 }
 
+@keyframes weaponFlash {
+  0% { transform: scale(1); background-color: transparent; }
+  50% { transform: scale(1.2); background-color: gold; }
+  100% { transform: scale(1); background-color: transparent; }
+}
+
+.weapon-animate {
+  animation: weaponFlash 0.6s ease;
+}
+
   
 /* Monster Stats Panel */
 #monsterStats {
