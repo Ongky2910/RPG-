@@ -2,6 +2,9 @@ let xp = 0;
 let level = 1;
 let maxXP = 100; 
 let health = 100;
+let attackStat = 10;
+let defenseStat = 5;
+let agilityStat = 5;
 let gold = 50;
 let currentMonster;
 let currentLocation;
@@ -32,9 +35,10 @@ weaponText.innerText = `Weapon: ${weapons[weaponIndex].name}`;
 document.getElementById("stats").appendChild(weaponText);
 
 window.onload = () => {
-  // Set initial health and XP display
+  // Set initial health and XP display and stat
   document.getElementById('healthText').innerText = `${health} / 100`;
   document.getElementById('xpText').innerText = `${xp}`;
+  updateStats();
   goTown();
 };
 
@@ -170,16 +174,6 @@ function goStore() {
   });
 }
 
-function animateWeaponUpgrade() {
-  weaponText.style.transition = "transform 0.3s, color 0.3s";
-  weaponText.style.transform = "scale(1.3)";
-  weaponText.style.color = "#ffcc00";
-  setTimeout(() => {
-    weaponText.style.transform = "scale(1)";
-    weaponText.style.color = "#fff";
-  }, 300);
-}
-
 function buyWeapon() {
   const nextWeapon = weapons[weaponIndex + 1];
   if (gold >= nextWeapon.cost) {
@@ -189,7 +183,7 @@ function buyWeapon() {
     weaponText.innerText = `Weapon: ${weapons[weaponIndex].name}`;
     text.innerText = `🔥 You upgraded to ${weapons[weaponIndex].name}!`;
     animateWeaponUpgrade();
-    goStore(); 
+    goStore();
   } else {
     text.innerText = "Not enough gold!";
   }
@@ -212,11 +206,29 @@ function levelUp() {
   level++;
   maxXP = Math.floor(maxXP * 1.25); 
   health += 20;
+  attackStat += 5;  
+  defenseStat += 3; 
+  agilityStat += 2; 
+
   healthText.innerText = `Health: ${health}`;
   levelText.innerText = `Level: ${level}`;
   text.innerText = `🎉 Level Up! You are now Level ${level}`;
+  
+  updateStats();
 }
 
+function updateStats() {
+  let statsText = document.getElementById("statsText");
+  if (!statsText) {
+    statsText = document.createElement("div");
+    statsText.id = "statsText";
+    document.getElementById("stats").appendChild(statsText);
+  }
+
+  document.getElementById("attackStat").innerText = attackStat;
+  document.getElementById("defenseStat").innerText = defenseStat;
+  document.getElementById("agilityStat").innerText = agilityStat;
+}
 
 function updateXPBar() {
   const progress = (xp / maxXP) * 100;
