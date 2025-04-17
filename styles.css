@@ -254,10 +254,49 @@ button:hover {
   line-height: 1.5;
 }
 
+#text.show {
+  opacity: 1;
+  visibility: visible;
+  text-shadow: 0 0 20px rgba(255, 0, 0, 1), 0 0 30px rgba(255, 0, 0, 1); /* Glowing red */
+}
+
 /* Sound Effects */
 audio {
   display: none;
 }
+
+/* Default Health Text */
+#healthText, #playerHealthStats {
+  font-size: 1.2em;
+  color: #fff;  /* Warna default health */
+  transition: all 0.5s ease;
+}
+
+/* Efek Hijau - Setelah membeli health */
+#healthText.upgraded {
+  color: #4caf50;  /* Warna hijau untuk upgrade health */
+  transform: scale(1.2);  /* Efek zoom */
+}
+
+#playerHealthStats.upgraded {
+  color: #4caf50;
+  transform: scale(1.2);
+}
+
+/* Efek Merah - Saat diserang oleh monster */
+#healthText.damaged{
+  color: #f44336; 
+  transform: scale(1.1); 
+  transition: color 0.3s, transform 0.3s;
+}
+
+#playerHealthStats.damaged {
+  color: #f44336;
+  transform: scale(1.1);
+  transition: color 0.3s, transform 0.3s ease-in-out;
+}
+
+
 
 /* Mobile Responsiveness */
 @media (max-width: 600px) {
