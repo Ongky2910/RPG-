@@ -10,11 +10,11 @@ let currentMonster;
 let currentLocation;
 let weaponIndex = 0;
 const weapons = [
-  { name: "Wooden Stick", power: 5 },
-  { name: "Hammer", power: 10, cost: 20 },
-  { name: "Axe", power: 20, cost: 40 },
-  { name: "Katana", power: 30, cost: 60 },
-  { name: "Sword", power: 50, cost: 80 },
+  { name: "Wooden Stick 🪵", power: 5 },
+  { name: "Hammer 🔨", power: 10, cost: 20 },
+  { name: "Axe 🪓", power: 20, cost: 40 },
+  { name: "Katana ⚔️", power: 30, cost: 60 },
+  { name: "Sword 🗡️", power: 50, cost: 80 },
 ];
 
 const button1 = document.getElementById("button1");
@@ -196,12 +196,20 @@ function goStore() {
   });
 }
 
+function updateWeaponStats() {
+  const weapon = weapons[weaponIndex];
+  const icon = weaponIcons[weapon.name] || "🛠️"; 
+  const weaponStats = document.getElementById("weaponStats");
+
+  weaponStats.innerText = `${icon} ${weapon.name} (Power +${weapon.power})`;
+}
 function buyWeapon() {
   const nextWeapon = weapons[weaponIndex + 1];
   if (gold >= nextWeapon.cost) {
     gold -= nextWeapon.cost;
     weaponIndex++;
     goldText.innerText = `Gold: ${gold}`;
+    
 
     // Update weapon text
     weaponText.innerText = `Weapon: ${weapons[weaponIndex].name}`;
@@ -475,13 +483,14 @@ function fightDragon() {
 }
 
 function restart() {
+  console.log("Restarting game...");
   xp = 0;
   level = 1;
   maxXP = 100;
   health = 100;
   gold = 50;
 
-  xpText.innerText = `${xp}`;
+  xp.innerText = `${xp}`;
   healthText.innerText = `${health} / 100`;
   goldText.innerText = `Gold: ${gold}`;
   levelText.innerText = `Level: ${level}`;

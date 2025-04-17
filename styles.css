@@ -30,8 +30,7 @@ body {
   
   #weaponText {
     font-weight: bold;
-    margin-top: 10px;
-    color: #0a0a23; 
+    color: #fff; 
   }
   
   /* Player Stats Panel */
@@ -248,17 +247,29 @@ button:hover {
   }
   
   /* Text Area: Game Story Text */
-#text {
-  margin-top: 20px;
-  font-size: 16px;
-  line-height: 1.5;
-}
+  #text {
+    width: 100%;
+    height: auto; 
+    overflow: auto; 
+    text-overflow: ellipsis; 
+    word-wrap: break-word; 
+    padding: 10px; 
+  }
+  
 
 #text.show {
   opacity: 1;
   visibility: visible;
-  text-shadow: 0 0 20px rgba(255, 0, 0, 1), 0 0 30px rgba(255, 0, 0, 1); /* Glowing red */
+  text-shadow: 0 0 20px rgba(255, 0, 0, 1), 0 0 30px rgba(255, 0, 0, 1);
 }
+
+#weaponStats {
+  font-size: 1.3rem;
+  color: #facc15;
+  font-weight: bold;
+  margin-top: 10px;
+}
+
 
 /* Sound Effects */
 audio {
@@ -266,7 +277,7 @@ audio {
 }
 
 /* Default Health Text */
-#healthText, #playerHealthStats {
+#healthText {
   font-size: 1.2em;
   color: #fff;  /* Warna default health */
   transition: all 0.5s ease;
