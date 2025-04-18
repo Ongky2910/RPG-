@@ -7,7 +7,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh; 
+  height: 100%; 
   flex-direction: column;
 }
   
@@ -270,6 +270,138 @@ button:hover {
   margin-top: 10px;
 }
 
+#battle-scene {
+  width: 100%;
+  height: 30vh;
+  position: relative;
+  background-color: #f0f0f0;
+  overflow: hidden;
+  visibility: hidden;
+}
+
+#animation-container {
+  position: absolute; 
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  visibility: hidden; 
+  transition: visibility 0.3s ease-in-out; /
+}
+
+#slime-sprite {
+  position: absolute;
+  width: 96px;
+  height: 96px;
+  background-image: url("assets/sprite/Slime_2.png");
+  background-size: cover;
+  image-rendering: pixelated;
+  right: 10%;
+  bottom: 100px;
+  transform: translateX(-50%); 
+  z-index: 0;
+}
+
+#knight-sprite {
+  width: 204px; 
+  height: 128px;
+  background-image: url('assets/sprite/Knight 2.png');
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-size: cover;
+  position: absolute; 
+  top: 50%;
+  left: 20%;
+  transform: translate(-50%, -150px); 
+   z-index: 1;
+  display: block; 
+}
+
+@keyframes knightAttack {
+  0% {
+    background-position: 0 0;
+  }
+  25% {
+    background-position: -204px 0; 
+  }
+  50% {
+    background-position: -408px 0;
+  }
+  75% {
+    background-position: -612px 0;
+  }
+  100% {
+    background-position: -816px 0;
+  }
+}
+
+@keyframes slimeAttack {
+  from {
+    background-position: 0 center;
+  }
+  to {
+    background-position: -384px center; 
+  }
+}
+
+#knight-idle {
+  position: absolute;
+  bottom: 0;
+  width: 200px; 
+  left: 0;
+  height: 128px;
+  background-image: url('assets/sprite/KnightIdle.png'); 
+  background-size: 400px 100px; 
+  animation: knightIdle 1s steps(4) infinite;
+}
+
+#slime-idle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 102px;
+  height: 102px;
+  background-image: url('assets/sprite/SlimeIdle.png');
+  background-size: 400px 100px;
+  background-size: 817px 102px; 
+  animation: slimeIdle 1s steps(8) infinite;
+  image-rendering: pixelated;
+  display: block;
+}
+
+@keyframes knightIdle {
+  from { background-position: 0 0; }
+  to { background-position: -400px 0; }
+}
+
+@keyframes slimeIdle {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: -817px 0; 
+  }
+}
+
+
+#start-battle {
+  margin-top: 20px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+}
+
+#battle-info {
+  text-align: center;
+  margin-top: 20px;
+}
 
 /* Sound Effects */
 audio {

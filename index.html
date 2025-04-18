@@ -1,55 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="./styles.css">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="./styles.css" />
     <title>RPG - Adventure Repeller</title>
   </head>
   <body>
-
     <!-- Main Game Container -->
     <div id="game">
-
       <!-- Player Stats Panel: Displays level, XP, health, and gold -->
       <div id="stats">
-        <span class="stat">Gold: <strong><span id="goldText">50</span></strong></span>
+        <span class="stat"
+          >Gold: <strong><span id="goldText">50</span></strong></span
+        >
       </div>
 
       <!-- Player Detailed Stats: More specific attributes (HP, attack, defense, agility) -->
       <div id="playerStats">
         <h3>Player Stats</h3>
-        <p>HP: <span id="healthText"></span></p>  
-        <p>Attack: <strong><span id="attackStat">5</span></strong></p>
-        <p>Defense: <strong><span id="defenseStat">3</span></strong></p>
-        <p>Agility: <strong><span id="agilityStat">4</span></strong></p>
-        
+        <p>HP: <span id="healthText"></span></p>
+        <p>
+          Attack: <strong><span id="attackStat">5</span></strong>
+        </p>
+        <p>
+          Defense: <strong><span id="defenseStat">3</span></strong>
+        </p>
+        <p>
+          Agility: <strong><span id="agilityStat">4</span></strong>
+        </p>
       </div>
-      
+
       <!-- Level-Up Message: This appears when the player levels up -->
       <div id="levelUpMessage">Level Up!</div>
-      
+
       <!-- Control Buttons: For navigating between different locations and actions -->
       <div id="controls">
         <button id="button1">Go to store</button>
         <button id="button2">Go to cave</button>
         <button id="button3">Fight dragon</button>
       </div>
-      
+
       <!-- Monster Stats Panel: Displays monster name and health when fighting -->
-      <div id="monsterStats" style="display:none;">
-        <span class="stat">Monster Name: <strong><span id="monsterName"></span></strong></span>
-        <span class="stat">Health: <strong><span id="monsterHealth">100</span></strong></span> 
+      <div id="monsterStats" style="display: none">
+        <span class="stat"
+          >Monster Name: <strong><span id="monsterName"></span></strong
+        ></span>
+        <span class="stat"
+          >Health: <strong><span id="monsterHealth">100</span></strong></span
+        >
       </div>
 
       <!-- Game Text Area: Describes the current game state and actions -->
       <div id="text">
-        Welcome to Dragon Repeller. You must defeat the dragon that is preventing people from leaving the town. You are in the town square. Where do you want to go? Use the buttons above.
+        Welcome to Dragon Repeller. You must defeat the dragon that is
+        preventing people from leaving the town. You are in the town square.
+        Where do you want to go? Use the buttons above.
+      </div>
+
+      <!-- Game Animation attack -->
+      <div id="battle-scene">
+        <div id="animation-container">
+          <div id="knight-sprite"></div>
+          <div id="knight-idle"></div>
+          <div id="slime-idle"></div>
+          <div id="slime-sprite"></div>
+        </div>
+       </div>
+
+      <!-- Text Info - Menginformasikan Battle -->
+      <div id="battle-info">
+        <p>
+          You're at the cave. The knight is waiting for the battle with the
+          slime!
+        </p>
       </div>
 
       <!-- Sound Files -->
       <audio id="fightSound" src="sound/fight.mp3"></audio>
-      <audio id="goldSound" src="assets/sounds/536071__eminyildirim__coin-collect.wav"></audio>
-      <audio id="levelUpSound" src="assets/sounds/682633__bastianhallo__level-up.ogg"></audio>
+      <audio
+        id="goldSound"
+        src="assets/sounds/536071__eminyildirim__coin-collect.wav"
+      ></audio>
+      <audio
+        id="levelUpSound"
+        src="assets/sounds/682633__bastianhallo__level-up.ogg"
+      ></audio>
     </div>
 
     <!-- Link to JavaScript file for functionality -->

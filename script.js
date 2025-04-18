@@ -98,30 +98,35 @@ const locations = [
     buttonText: ["Go Store", "Go Cave", "Fight Dragon"],
     buttonFunctions: [goStore, goCave, fightDragon],
     text: 'You are in the town square. You see a sign that says "Store".',
+    showKnight: false,
   },
   {
     name: "store",
     buttonText: ["Buy 10 Health (10 gold)", "Buy Sword (30 gold)", "Go Town"],
     buttonFunctions: [buyHealth, buySword, goTown],
     text: "You enter the store.",
+    showKnight: false,
   },
   {
     name: "cave",
     buttonText: ["Fight Slime", "Fight Beast", "Go Town"],
     buttonFunctions: [() => fightMonster(0), () => fightMonster(1), goTown],
     text: "You enter the cave. You see some monsters.",
+    showKnight: true,
   },
   {
     name: "fight",
     buttonText: ["Attack", "Dodge", "Run"],
     buttonFunctions: [attack, dodge, goTown],
     text: "You are fighting a monster.",
+    showKnight: true,
   },
   {
     name: "kill monster",
     buttonText: ["Go Town", "Go Town", "Go Town"],
     buttonFunctions: [goTown, goTown, goTown],
     text: 'The monster screams "Arg!" as it dies. You gain experience and find gold.',
+    showKnight: true,
   },
   {
     name: "lose",
@@ -138,6 +143,28 @@ const locations = [
 ];
 
 function update(location) {
+  const knight = document.getElementById('knight-sprite');
+  const knightIdle = document.getElementById('knight-idle');
+  const slimeIdle = document.getElementById('slime-idle');
+  const animationContainer = document.getElementById('animation-container');
+
+  // Menampilkan atau menyembunyikan knight dan slime tergantung lokasi
+  if (location.showKnight) {
+    knight.style.display = 'block';
+    knightIdle.style.display = 'block';  // Menampilkan idle knight jika berada di cave
+  } else {
+    knight.style.display = 'none';
+    knightIdle.style.display = 'none';  // Menyembunyikan idle knight jika bukan di cave
+  }
+
+  if (location.name === "cave") {
+    // Ketika berada di cave, muncul battle scene
+    animationContainer.style.visibility = 'visible';
+  } else {
+    // Menyembunyikan battle scene ketika berada di lokasi lain
+    animationContainer.style.visibility = 'hidden';
+  }
+  // Update lokasi, teks, dan tombol
   currentLocation = location;
   text.innerText = location.text;
   button1.innerText = location.buttonText[0];
@@ -209,7 +236,6 @@ function buyWeapon() {
     gold -= nextWeapon.cost;
     weaponIndex++;
     goldText.innerText = `Gold: ${gold}`;
-    
 
     // Update weapon text
     weaponText.innerText = `Weapon: ${weapons[weaponIndex].name}`;
@@ -228,7 +254,7 @@ function buyWeapon() {
     goStore();
   } else {
     text.innerText = "Not enough gold!";
-  }
+  } 
 }
 
 function animateWeaponUpgrade() {
@@ -343,6 +369,7 @@ function buySword() {
     text.innerText = "Not enough gold!";
   }
 }
+
 function fightMonster(index) {
   currentMonster = { ...monsters[index] };
   monsterStats.style.display = "block";
@@ -364,10 +391,11 @@ function shakeMonster() {
 
 function attack() {
   animateAttack();
+  showAttackAnimation();
 
   const playerDamage = Math.floor(Math.random() * 10 + 1);
   // Mengurangi health monster
-  currentMonster.health -= Math.floor(Math.random() * 10 + 1);
+  currentMonster.health -= playerDamage;
   monsterHealth.innerText = currentMonster.health;
 
   shakeMonster();
@@ -394,6 +422,21 @@ function attack() {
   }
 }
 
+function showAttackAnimation() {
+  const animContainer = document.getElementById("animation-container");
+  const sprite = document.getElementById("knight-sprite");
+
+  animContainer.style.display = "flex";
+  sprite.style.animation = "none"; // reset animasi
+  void sprite.offsetWidth; // trigger reflow
+  sprite.style.animation = "knightAttack 0.6s steps(4) 1"; // jalanin animasi
+  console.log("🌀 Animasi jalan!");
+  
+  // setelah 0.6 detik, sembunyikan
+  setTimeout(() => {
+    animContainer.style.display = "none";
+  }, 600);
+}
 
 // Fungsi untuk mengurangi health saat diserang monster
 function takeDamage(damage) {
