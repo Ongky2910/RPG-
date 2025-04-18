@@ -303,6 +303,7 @@ button:hover {
   bottom: 100px;
   transform: translateX(-50%); 
   z-index: 0;
+  animation: slimeAttack 1s steps(8) infinite; 
 }
 
 #knight-sprite {
@@ -318,6 +319,7 @@ button:hover {
   transform: translate(-50%, -150px); 
    z-index: 1;
   display: block; 
+  animation: knightAttack 1s steps(4) infinite; 
 }
 
 @keyframes knightAttack {

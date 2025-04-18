@@ -146,24 +146,30 @@ function update(location) {
   const knight = document.getElementById('knight-sprite');
   const knightIdle = document.getElementById('knight-idle');
   const slimeIdle = document.getElementById('slime-idle');
+  const slimeSprite = document.getElementById('slime-sprite');
   const animationContainer = document.getElementById('animation-container');
 
-  // Menampilkan atau menyembunyikan knight dan slime tergantung lokasi
+  // Menampilkan knight dan slime tergantung pada lokasi dan keadaan
   if (location.showKnight) {
     knight.style.display = 'block';
-    knightIdle.style.display = 'block';  // Menampilkan idle knight jika berada di cave
+    knightIdle.style.display = 'block';  // Menampilkan idle knight di cave
+    slimeIdle.style.display = 'block';   // Menampilkan slime idle saat di cave
   } else {
     knight.style.display = 'none';
-    knightIdle.style.display = 'none';  // Menyembunyikan idle knight jika bukan di cave
+    knightIdle.style.display = 'none';  // Menyembunyikan idle knight saat bukan di cave
+    slimeIdle.style.display = 'none';   // Menyembunyikan slime idle saat bukan di cave
   }
 
   if (location.name === "cave") {
-    // Ketika berada di cave, muncul battle scene
+    // Munculkan battle scene saat di cave
     animationContainer.style.visibility = 'visible';
+    slimeSprite.style.visibility = 'visible';  // Pastikan slime muncul selama pertempuran
   } else {
-    // Menyembunyikan battle scene ketika berada di lokasi lain
+    // Sembunyikan battle scene di lokasi lain
     animationContainer.style.visibility = 'hidden';
+    slimeSprite.style.visibility = 'hidden';
   }
+
   // Update lokasi, teks, dan tombol
   currentLocation = location;
   text.innerText = location.text;
@@ -173,8 +179,31 @@ function update(location) {
   button1.onclick = location.buttonFunctions[0];
   button2.onclick = location.buttonFunctions[1];
   button3.onclick = location.buttonFunctions[2];
+
+  // Memainkan suara atau efek yang terkait dengan lokasi
   playSound(location.name);
 }
+
+function endBattle(winner) {
+  // Sembunyikan elemen setelah pertempuran selesai
+  const slimeSprite = document.getElementById('slime-sprite');
+  const knightSprite = document.getElementById('knight-sprite');
+  const animationContainer = document.getElementById('animation-container');
+  
+  // Sembunyikan battle setelah selesai
+  slimeSprite.style.visibility = 'hidden';
+  knightSprite.style.visibility = 'hidden';
+  animationContainer.style.visibility = 'hidden';
+
+  // Tampilkan pesan kemenangan atau kekalahan
+  if (winner === 'knight') {
+
+  } else {
+    // Logika kalah
+    alert('You were defeated by the monster!');
+  }
+}
+
 
 function playSound(name) {
   const fightSound = document.getElementById("fightSound");
@@ -407,15 +436,20 @@ function attack() {
     goldText.innerText = `Gold: ${gold}`;
     updateXPBar();
     text.innerText = `You attacked for ${playerDamage} damage and defeated the monster!`;
-    update(locations[4]); // Update lokasi setelah mengalahkan monster
+    update(locations[4]); 
+    endBattle('knight'); 
+    return;
   } else {
     // Jika monster masih hidup, monster menyerang balik
     const monsterDamage = currentMonster.level * 5; // Damage monster berdasarkan level
-    takeDamage(monsterDamage); // Player menerima damage
+    takeDamage(monsterDamage); 
+    
     // Mengecek apakah player masih hidup
     if (health <= 0) {
       text.innerText = `You attacked for ${playerDamage} damage.\nBut the ${currentMonster.name} counterattacked for ${monsterDamage} damage.\nYou died. ☠️`;
       update(locations[5]);
+
+      endBattle('slime');
     } else {
       text.innerText = `You attacked the ${currentMonster.name} for ${playerDamage} damage.\nThe ${currentMonster.name} hit you back for ${monsterDamage} damage.`;
     }
