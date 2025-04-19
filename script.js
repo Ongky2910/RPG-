@@ -404,6 +404,9 @@ function fightMonster(index) {
   monsterStats.style.display = "block";
   monsterName.innerText = currentMonster.name;
   monsterHealth.innerText = currentMonster.health;
+
+  const knight = document.getElementById('knight-sprite');
+  knight.style.display = 'block'; 
   update(locations[3]);
 }
 
@@ -435,9 +438,12 @@ function attack() {
     gold += Math.floor(currentMonster.level * 3.5);
     goldText.innerText = `Gold: ${gold}`;
     updateXPBar();
+
     text.innerText = `You attacked for ${playerDamage} damage and defeated the monster!`;
     update(locations[4]); 
     endBattle('knight'); 
+
+    resetBattleAnimations();
     return;
   } else {
     // Jika monster masih hidup, monster menyerang balik
@@ -448,8 +454,8 @@ function attack() {
     if (health <= 0) {
       text.innerText = `You attacked for ${playerDamage} damage.\nBut the ${currentMonster.name} counterattacked for ${monsterDamage} damage.\nYou died. ☠️`;
       update(locations[5]);
-
       endBattle('slime');
+      resetBattleAnimations();
     } else {
       text.innerText = `You attacked the ${currentMonster.name} for ${playerDamage} damage.\nThe ${currentMonster.name} hit you back for ${monsterDamage} damage.`;
     }
