@@ -450,6 +450,7 @@ function attack() {
     const monsterDamage = currentMonster.level * 5; // Damage monster berdasarkan level
     takeDamage(monsterDamage); 
     
+    
     // Mengecek apakah player masih hidup
     if (health <= 0) {
       text.innerText = `You attacked for ${playerDamage} damage.\nBut the ${currentMonster.name} counterattacked for ${monsterDamage} damage.\nYou died. ☠️`;
