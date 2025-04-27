@@ -17,6 +17,7 @@ const weapons = [
   { name: "Sword 🗡️", power: 50, cost: 80 },
 ];
 
+
 const button1 = document.getElementById("button1");
 const button2 = document.getElementById("button2");
 const button3 = document.getElementById("button3");
